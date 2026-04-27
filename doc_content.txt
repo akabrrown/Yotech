@@ -1,0 +1,826 @@
+YOTECH
+IT SOLUTIONS
+─────────────────────────────
+MVP Technical Documentation
+Version 1.0  |  2025
+Products &amp; Hardware
+Software &amp; Services
+Tech Support
+Technology Stack: React + Next.js + TypeScript
+Authentication: Supabase Auth
+Storage: Cloudinary
+Brand: White &amp; #3A9AFF Blue
+1. PROJECT OVERVIEW
+Business Context &amp; Scope
+1.1  Business Overview
+YoTech IT Solutions is a full-featured e-commerce and service platform designed for an IT business that sells hardware (laptops, PCs, mice, keyboards, components), software licenses, accessories, and provides professional tech support services. The platform serves both public visitors and registered users, with a privileged admin back-office for full business management.
+1.2  Business Goals
+Provide a seamless online shopping experience for IT hardware and software products
+Enable customer self-service account management, order tracking, and support tickets
+Empower admins with full catalog, order, user, and analytics management
+Scale from MVP to a full production e-commerce platform
+Build brand trust with a clean, professional blue-and-white interface
+1.3  Scope of MVP
+MVP Definition
+The Minimum Viable Product covers the core shopping flow (browse → cart → checkout → order tracking), user authentication, admin control panel, product catalog management, and tech support ticket submission. Advanced features (AI recommendations, loyalty program, live chat) are post-MVP.
+2. USER ROLES &amp; PERMISSIONS
+Access Control Matrix
+2.1  Role Definitions
+Role 1 — Public Visitor (Unauthenticated)
+Any user who accesses the site without an account or without logging in. This is the default state for all new visitors.
+Capability
+Details
+Browse Products
+View all product listings, categories, search, and filter without login
+View Product Details
+See specs, images, pricing, availability, and customer reviews
+View Promotions
+See active deals, banners, and featured collections
+Add to Wishlist
+Redirected to login/register to save items
+Add to Cart
+Can build a cart; prompted to login/register at checkout
+Contact Support
+Can submit a general inquiry form (name + email required)
+Register / Login
+Access to register or login page at any time
+Role 2 — Registered Customer (Authenticated Public User)
+A user who has created an account and is logged in. Has all Visitor capabilities plus additional self-service features.
+Capability
+Details
+Profile Management
+Update name, email, password, avatar (via Cloudinary), and contact details
+Address Book
+Save, edit, and delete multiple shipping/billing addresses
+Full Checkout
+Complete purchases with saved addresses, apply coupon codes
+Order History
+View all past orders with full details, statuses, and invoice download
+Order Tracking
+Real-time status updates on active orders
+Wishlist
+Save products to a personal wishlist for future purchase
+Product Reviews
+Write, edit, and delete reviews on purchased products
+Support Tickets
+Submit, view, and respond to tech support tickets
+Notifications
+Receive email notifications for order updates, promotions
+Role 3 — Admin (Privileged Back-Office User)
+A superuser with full access to the admin dashboard. Admins are manually provisioned in Supabase with the &apos;admin&apos; role; they cannot self-register.
+Module
+Admin Capabilities
+Dashboard
+KPI overview: revenue, orders, top products, user signups, low stock alerts
+Product Management
+Full CRUD on products, categories, tags, variants (color, size, specs), stock levels
+Media Management
+Upload, organize, and delete product images via Cloudinary integration
+Order Management
+View, update status, cancel, refund, and export orders
+User Management
+View all users, disable accounts, reset passwords, manage roles
+Coupon &amp; Promotions
+Create, edit, and expire discount codes and site-wide promotions
+Support Tickets
+View all tickets, assign to agents, change status, reply to customers
+Inventory Alerts
+Configure low-stock thresholds, view out-of-stock items
+Analytics
+Sales reports, revenue charts, conversion funnels, export CSV
+Site Settings
+Banner management, homepage featured products, SEO meta tags
+3. MVP FEATURES LIST
+Prioritized by Role &amp; Module
+3.1  Authentication &amp; User Accounts
+Provider
+Supabase Auth — handles all authentication flows. JWT tokens stored in HttpOnly cookies. Role (customer/admin) stored in Supabase user_metadata and enforced via Row Level Security (RLS) policies.
+Public / Customer Features
+Register with email and password (email verification required)
+Login with email and password
+OAuth login — Google and GitHub (via Supabase providers)
+Forgot password / password reset via email link
+Protected routes redirect unauthenticated users to /login
+Persistent sessions with Supabase auto-refresh tokens
+Profile page: update name, phone, avatar, password
+Avatar upload via Cloudinary with automatic resizing
+Admin Features
+Admin login via the same Supabase flow; role checked in middleware
+Admin-only routes protected with Next.js middleware role guard
+View, deactivate, and reactivate customer accounts
+Manually assign or revoke admin role
+3.2  Product Catalog
+Public / Customer Features
+Browse all products with pagination (server-side rendered for SEO)
+Category navigation: Laptops, Desktop PCs, Mice, Keyboards, Components, Software, Accessories, Services
+Product search with full-text search (Supabase PostgreSQL full-text)
+Advanced filters: price range, brand, category, rating, availability, condition (new/refurbished)
+Sort options: price ascending/descending, newest, best-rated, best-selling
+Product detail page: gallery (Cloudinary images), specs table, description, pricing, stock badge
+Related products section (same category, up to 4 items)
+Product availability badges (In Stock / Low Stock / Out of Stock)
+Customer reviews and ratings display (read without login)
+Admin Features
+Create, edit, and delete products
+Manage product categories and sub-categories
+Upload and manage product images via Cloudinary (up to 8 images per product)
+Set primary image, reorder gallery images
+Manage product variants (storage size, RAM, color) with per-variant pricing and stock
+Bulk import products via CSV upload
+Set featured products for homepage display
+Archive/unarchive products without deleting them
+3.3  Shopping Cart &amp; Checkout
+Public / Visitor Features
+Add products to cart (cart persisted in localStorage for guests)
+Update quantities and remove items
+View cart summary with subtotal
+Prompted to login/register before proceeding to checkout
+Registered Customer Features
+Cart synced to Supabase on login (merge guest cart with account cart)
+Multi-step checkout: Cart Review → Shipping Address → Payment → Confirmation
+Save and reuse shipping addresses from address book
+Apply coupon/promo codes for discounts
+Order summary with tax calculation and shipping cost display
+Order confirmation page with order number and estimated delivery
+Confirmation email sent via Supabase Edge Function + email provider
+3.4  Orders Management
+Customer Features
+View order history list with status, date, and total
+View full order detail: items, quantities, shipping info, payment summary
+Track order status: Pending → Processing → Shipped → Delivered / Cancelled
+Download PDF invoice for each order
+Cancel order (only if status is Pending or Processing)
+Admin Features
+View all orders in a data table with filters (status, date range, customer)
+Update order status with timestamped history
+Add tracking number and carrier information
+Process cancellations and refunds (manual for MVP)
+Export order data as CSV
+3.5  Inventory Management
+Admin Features
+Real-time stock level display per product / variant
+Manually adjust stock quantities with reason notes
+Low-stock alerts: configurable threshold (default: 5 units)
+Out-of-stock products automatically hidden from public listing
+Inventory log: history of all stock changes with timestamps and admin who made the change
+3.6  Promotions &amp; Coupons
+Customer Features
+Apply coupon code at checkout
+See discount reflected in order summary before confirming
+Admin Features
+Create coupon codes: percentage discount, fixed amount, or free shipping
+Set expiry date, usage limit (total and per-user), and minimum order value
+View coupon usage statistics
+Activate and deactivate coupons
+Create site-wide promotional banners (linked to a category or product)
+3.7  Tech Support &amp; Service Tickets
+Customer Features
+Submit a support ticket: select service type (hardware, software, general), describe issue, attach screenshot (Cloudinary)
+View status of open and closed tickets
+Receive email updates when ticket status changes
+Reply to ticket thread to add more information
+Visitor Features (No Account)
+Submit general inquiry via contact form (name, email, message)
+No ticket tracking — response sent by email
+Admin Features
+View all tickets in a queue with priority and status filters
+Assign tickets to team members
+Update ticket status: Open → In Progress → Resolved / Closed
+Reply to customer via ticket thread
+Mark tickets as resolved and archive
+3.8  Reviews &amp; Ratings
+Customer Features
+Write a star rating (1–5) and text review on any product they have purchased
+Edit or delete their own review
+View all reviews on a product page
+Admin Features
+View all reviews across all products
+Remove inappropriate reviews
+See review analytics: average rating per product, total reviews count
+3.9  Wishlist
+Add/remove products from a personal wishlist (requires login)
+View wishlist with add-to-cart option
+Wishlist item shows in-stock / out-of-stock status
+3.10  Notifications
+Email: Order confirmation, order status update, password reset, support ticket update
+In-app notification bell with unread count for registered users
+Admin dashboard alerts: low stock, new orders, new support tickets
+3.11  Admin Analytics Dashboard
+Total revenue (daily, weekly, monthly views)
+Total orders count with breakdown by status
+New customer registrations over time
+Top 5 best-selling products
+Category sales distribution chart
+Conversion funnel: visitors → added to cart → checkout → purchased
+Export all reports as CSV
+3.12  SEO &amp; Public Site Pages
+Homepage: hero banner, featured products, category grid, promotional section
+About page: company description, services offered
+Contact page: contact form, business details, map embed
+FAQ page: accordion with common questions
+Server-side rendering (Next.js SSR/SSG) for all public product pages
+Dynamic meta tags (title, description, og:image) per product page
+Sitemap.xml auto-generated
+4. TECHNOLOGY STACK
+Full Architecture Overview
+4.1  Frontend
+Package
+Next.js Features
+DX Tooling
+Next.js 14
+App Router (Next.js)
+SWC Compiler
+React 18
+Server Components
+Webpack 5
+TypeScript 5
+Client Components
+PostCSS
+Tailwind CSS 3
+Server Actions
+Autoprefixer
+Headless UI
+API Routes
+ESLint
+Framer Motion
+Image Optimization
+Prettier
+React Hook Form
+Middleware (Auth guard)
+TypeScript strict mode
+Zod
+ISR / SSG / SSR
+Husky (pre-commit)
+React Query (TanStack)
+Dynamic Imports
+lint-staged
+Recharts
+Error Boundaries
+Commitlint
+Lucide React
+React Hot Toast
+4.2  Backend &amp; Database
+Service
+Technology
+Purpose
+Authentication
+Supabase Auth
+JWT-based auth, OAuth (Google, GitHub), email verification, password reset, row-level security hooks
+Database
+Supabase PostgreSQL
+Primary relational database for all business data — products, orders, users, reviews, tickets
+Row Level Security
+Supabase RLS
+Database-level access control ensuring users only see/modify their own data
+Real-time
+Supabase Realtime
+Live order status updates, ticket reply notifications, admin stock alerts
+Storage
+Cloudinary
+Product image uploads, user avatars, support ticket attachments — with CDN delivery
+Edge Functions
+Supabase Edge Functions
+Email notifications (order confirm, ticket update), coupon validation, webhook processing
+API
+Next.js API Routes
+Custom REST endpoints for cart, checkout, coupons, and webhook handling
+Email
+Resend (via Edge Fn)
+Transactional emails: order confirmation, status updates, password reset
+4.3  Infrastructure &amp; DevOps
+Platform &amp; Services
+CI/CD Pipeline
+Vercel (Frontend Hosting)
+Preview deployments per PR
+Supabase (BaaS)
+Production branch auto-deploy
+Cloudinary (Media CDN)
+Database migrations (Supabase CLI)
+GitHub (Source Control)
+Branch-based environments
+GitHub Actions (CI/CD)
+Lint + type-check on push
+Vercel Analytics
+E2E tests on merge to main
+Sentry (Error Tracking)
+Slack notifications on deploy
+Vercel Environment Variables
+Automated dependency updates (Renovate)
+5. LIBRARIES &amp; DEPENDENCIES
+Complete Package List
+5.1  Core Production Dependencies
+Package
+Version
+Purpose
+next
+14.x
+Full-stack React framework with App Router, SSR, SSG, API routes
+react
+18.x
+UI component library
+react-dom
+18.x
+React DOM renderer
+typescript
+5.x
+Static type checking
+@supabase/supabase-js
+2.x
+Supabase client — auth, database, realtime, storage
+@supabase/auth-helpers-nextjs
+0.10.x
+Next.js helpers for Supabase Auth with App Router
+@supabase/ssr
+latest
+Server-side rendering helpers for Supabase sessions
+cloudinary
+2.x
+Server-side Cloudinary SDK for upload signing and management
+next-cloudinary
+5.x
+Next.js Cloudinary Image component with optimization
+tailwindcss
+3.x
+Utility-first CSS framework
+@headlessui/react
+2.x
+Accessible, unstyled UI components (modals, dropdowns, tabs)
+@heroicons/react
+2.x
+SVG icon set
+lucide-react
+latest
+Additional SVG icon set
+framer-motion
+11.x
+Animation library for page transitions and micro-animations
+react-hook-form
+7.x
+Performant form state management
+@hookform/resolvers
+3.x
+Zod resolver adapter for React Hook Form
+zod
+3.x
+TypeScript-first schema validation
+@tanstack/react-query
+5.x
+Server state management, caching, and data synchronization
+axios
+1.x
+HTTP client for API calls (used alongside fetch)
+recharts
+2.x
+Composable chart library for admin analytics dashboard
+react-hot-toast
+2.x
+Toast notification system
+@radix-ui/react-dialog
+latest
+Accessible dialog / modal primitives
+@radix-ui/react-dropdown-menu
+latest
+Accessible dropdown menu primitives
+@radix-ui/react-select
+latest
+Accessible select component primitives
+@radix-ui/react-tooltip
+latest
+Accessible tooltip primitives
+clsx
+2.x
+Utility for constructing className strings
+tailwind-merge
+2.x
+Merge Tailwind classes without conflicts
+date-fns
+3.x
+Date utility library for formatting, parsing, and manipulation
+react-dropzone
+14.x
+File upload drag-and-drop area for image uploads
+react-image-gallery
+1.x
+Product image carousel and lightbox
+react-paginate
+8.x
+Pagination component for product listings
+resend
+2.x
+Email API client for transactional emails
+@react-pdf/renderer
+3.x
+Generate PDF invoices client-side
+paystack-node
+3.x
+Paystack server-side Node.js SDK for payment processing
+react-paystack
+3.x
+Paystack React hooks and components for inline payment popup
+sharp
+0.x
+High-performance image processing for Next.js Image
+jose
+5.x
+JWT encoding/decoding for custom middleware role checks
+bcryptjs
+2.x
+Password hashing utility (fallback / custom auth flows)
+nanoid
+5.x
+Compact unique ID generator for order numbers, coupon codes
+slugify
+1.x
+Generate URL-safe slugs from product names
+react-intersection-observer
+9.x
+Lazy loading and infinite scroll trigger
+5.2  Development Dependencies
+Package
+Version
+Purpose
+@types/node
+20.x
+TypeScript types for Node.js
+@types/react
+18.x
+TypeScript types for React
+@types/react-dom
+18.x
+TypeScript types for React DOM
+@types/bcryptjs
+2.x
+TypeScript types for bcryptjs
+eslint
+8.x
+JavaScript / TypeScript linter
+eslint-config-next
+14.x
+ESLint rules preset for Next.js projects
+eslint-plugin-react
+latest
+ESLint rules for React best practices
+eslint-plugin-react-hooks
+latest
+ESLint rules enforcing Hooks rules
+eslint-plugin-jsx-a11y
+latest
+Accessibility linting for JSX
+eslint-plugin-import
+latest
+ESLint rules for import/export syntax
+prettier
+3.x
+Opinionated code formatter
+prettier-plugin-tailwindcss
+0.x
+Auto-sorts Tailwind class names
+husky
+9.x
+Git hooks manager
+lint-staged
+15.x
+Run linters only on staged files before commit
+@commitlint/cli
+18.x
+Enforce conventional commit message format
+@commitlint/config-conventional
+18.x
+Conventional commits rule set
+vitest
+1.x
+Fast unit test runner (Vite-based)
+@testing-library/react
+14.x
+React component testing utilities
+@testing-library/user-event
+14.x
+Simulate user interactions in tests
+@testing-library/jest-dom
+6.x
+Custom DOM matchers for tests
+jsdom
+24.x
+Simulated DOM environment for unit tests
+playwright
+1.x
+End-to-end browser testing
+@playwright/test
+1.x
+Playwright test runner
+msw
+2.x
+Mock Service Worker for API mocking in tests
+supabase
+1.x
+Supabase CLI for local dev and migrations
+autoprefixer
+10.x
+PostCSS plugin for vendor prefixes
+postcss
+8.x
+CSS transformation tool
+cross-env
+7.x
+Cross-platform environment variable setting
+6. SECURITY
+Tools, Policies &amp; Implementation
+6.1  Authentication Security
+Supabase Auth Security Model
+All authentication is handled by Supabase Auth, which provides industry-standard security out of the box. The following measures are additionally implemented at the application layer.
+Session &amp; Token Management
+JWT tokens stored in HttpOnly, Secure, SameSite=Lax cookies (not localStorage)
+Supabase auto-refresh tokens silently renewed before expiry
+Session invalidated on logout across all tabs via Supabase BroadcastChannel
+Absolute session timeout: 24 hours for customers, 8 hours for admins
+Concurrent session limit: max 3 devices per user (enforced via Supabase session management)
+Password Policy
+Minimum 8 characters, must include uppercase, lowercase, number, and special character
+Password strength indicator on registration form
+bcrypt hashing with cost factor 12 (handled by Supabase)
+Password reset via time-limited email link (1 hour expiry)
+Prevent reuse of last 3 passwords
+Rate Limiting &amp; Brute Force Protection
+Supabase Auth built-in rate limiting on login, registration, and password reset endpoints
+Custom rate limiting middleware (Upstash Redis or Vercel Edge Middleware): 5 failed login attempts → 15-minute lockout
+CAPTCHA challenge (hCaptcha via Supabase) on registration and password reset
+6.2  Authorization &amp; Access Control
+Row Level Security (RLS) — Supabase
+RLS enabled on ALL tables — no row access without a valid session policy
+customers table: users can only read/update their own row
+orders table: customers see only their own orders; admins see all
+support_tickets table: customers see only their own tickets; admins see all
+products table: read access for all authenticated and anonymous users; write only for admins
+Admin-only tables (coupons, inventory_log, analytics): admin role required
+Application-Level Route Guards
+Next.js Middleware checks JWT role claim on every request to /dashboard/* (admin) and /account/* (customer)
+Server Components validate session server-side before rendering protected content
+API routes validate Authorization header and role before processing mutations
+Admin routes return 403 if role !== &apos;admin&apos;
+6.3  Input Validation &amp; Sanitization
+Threat
+Mitigation
+SQL Injection
+Supabase uses parameterized queries exclusively. No raw SQL string interpolation. RLS adds an additional layer of query isolation.
+XSS (Cross-Site Scripting)
+React escapes all output by default. DOMPurify used when rendering any user-provided HTML content (product descriptions, reviews). Content Security Policy headers set via next.config.js.
+CSRF
+SameSite=Lax cookies provide CSRF protection. API routes for mutations additionally check Origin header against NEXT_PUBLIC_SITE_URL.
+Mass Assignment
+Zod schemas validate and strip unknown fields on all incoming API request bodies before database writes.
+File Upload Abuse
+Cloudinary upload_preset restricts file type (images only: jpg, png, webp), max size (5 MB), and folder. Server-side signed uploads with Cloudinary API secret.
+Path Traversal
+File uploads go directly to Cloudinary via signed upload — no local filesystem writes. No file paths exposed to users.
+Open Redirect
+All redirect destinations validated against an allowlist of internal routes. External redirects blocked.
+6.4  HTTP Security Headers
+Configuration
+All headers configured in next.config.js using the headers() export. Applied globally to all responses.
+Header
+Value / Purpose
+Content-Security-Policy
+Strict CSP: default-src &apos;self&apos;; script-src &apos;self&apos; &apos;unsafe-eval&apos; (dev only); img-src &apos;self&apos; res.cloudinary.com data:; connect-src &apos;self&apos; *.supabase.co
+Strict-Transport-Security
+max-age=63072000; includeSubDomains; preload — forces HTTPS for 2 years
+X-Content-Type-Options
+nosniff — prevents MIME type sniffing
+X-Frame-Options
+DENY — prevents clickjacking via iframes
+Referrer-Policy
+strict-origin-when-cross-origin — limits referrer data leakage
+Permissions-Policy
+camera=(), microphone=(), geolocation=() — disables browser feature access
+X-XSS-Protection
+1; mode=block — legacy XSS filter for older browsers
+6.5  Security Tools &amp; Libraries
+Tool / Package
+Category
+Purpose
+dompurify
+XSS Prevention
+Sanitizes user-generated HTML before rendering (product descriptions, reviews)
+isomorphic-dompurify
+XSS Prevention
+Server-side DOMPurify for Next.js Server Components
+jose
+JWT / Crypto
+JWT verification and role claim extraction in Next.js Middleware
+bcryptjs
+Hashing
+Password hashing for any custom auth flows outside Supabase
+zod
+Validation
+Schema validation and sanitization of all API inputs
+@upstash/ratelimit
+Rate Limiting
+Redis-backed rate limiting for login, registration, and API endpoints
+@upstash/redis
+Rate Limiting
+Upstash Redis client (serverless-compatible) for rate limit state
+next-safe-action
+API Safety
+Type-safe Server Actions with built-in validation and error handling
+Supabase RLS
+Authorization
+Database-level row isolation policies — zero trust at DB layer
+hCaptcha (Supabase)
+Bot Protection
+CAPTCHA on signup and password reset forms
+Sentry
+Error Monitoring
+Tracks runtime errors, security exceptions, and unusual patterns
+npm audit
+Dependency Audit
+Run on every CI build to flag known CVEs in dependencies
+Snyk (CI)
+Vulnerability Scan
+Automated dependency scanning integrated into GitHub Actions
+OWASP ZAP (pre-launch)
+Penetration Test
+Automated OWASP Top 10 vulnerability scan before production release
+Vercel Firewall
+WAF
+Web Application Firewall rules to block malicious traffic at the edge
+Cloudinary Signed Uploads
+Upload Security
+Server-signed upload presets prevent unauthorized direct uploads
+6.6  Data Protection &amp; Privacy
+All data transmitted over TLS 1.2+ (enforced by Vercel + Supabase)
+Supabase database encrypted at rest (AES-256)
+Cloudinary media served over HTTPS CDN with signed URLs for private assets
+PII (personally identifiable information) never logged in application logs
+Customer passwords never stored or logged — only bcrypt hashes in Supabase
+GDPR-ready: users can request account deletion from account settings (soft-delete flow)
+Cookie consent banner with granular opt-in for analytics cookies
+Environment variables stored in Vercel/Supabase vault, never in source code
+.env files committed to .gitignore — example .env.example committed without secrets
+7. DATABASE SCHEMA OVERVIEW
+Supabase PostgreSQL
+7.1  Core Tables
+Table
+Key Fields
+RLS Policy
+profiles
+id (FK auth.users), full_name, email, phone, avatar_url, role, created_at
+Users read/write own row. Admins read all.
+addresses
+id, user_id, label, street, city, country, is_default
+Users CRUD own addresses only.
+categories
+id, name, slug, parent_id, image_url, description
+Public read. Admin write.
+products
+id, name, slug, description, price, category_id, stock, images[], is_featured, is_archived
+Public read (non-archived). Admin full CRUD.
+product_variants
+id, product_id, label, value, price_modifier, stock_qty
+Public read. Admin write.
+carts
+id, user_id, items (JSONB), updated_at
+Users access own cart only.
+orders
+id, user_id, status, items (JSONB), subtotal, tax, shipping, total, shipping_address_id
+Users read own. Admins full access.
+order_status_history
+id, order_id, status, note, changed_by, changed_at
+Append-only. Users read own. Admins write.
+reviews
+id, product_id, user_id, rating, body, created_at
+Public read. Users write own. Admins delete.
+wishlists
+id, user_id, product_id, added_at
+Users access own wishlist only.
+coupons
+id, code, type, value, min_order, usage_limit, used_count, expires_at, is_active
+Admin CRUD. Authenticated read for validation.
+support_tickets
+id, user_id, subject, type, status, priority, created_at
+Users read/create own. Admins full access.
+ticket_messages
+id, ticket_id, sender_id, body, attachments[], created_at
+Scoped to ticket access rights.
+notifications
+id, user_id, type, message, is_read, created_at
+Users read own. System insert.
+inventory_log
+id, product_id, variant_id, delta, reason, changed_by, created_at
+Admins read. System insert only.
+8. CLOUDINARY STORAGE SETUP
+Media Management Configuration
+8.1  Folder Structure
+yotech/products/{product-slug}/ — Product images (primary + gallery)
+yotech/avatars/{user-id}/ — User profile pictures
+yotech/banners/ — Homepage and promotional banners
+yotech/tickets/{ticket-id}/ — Support ticket attachments
+yotech/categories/ — Category thumbnail images
+8.2  Upload Configuration
+Server-side signed uploads only — Cloudinary API secret never exposed to browser
+Next.js API route /api/cloudinary/sign generates upload signatures
+Upload preset: yotech_products — type: image, max_bytes: 5000000, allowed_formats: jpg, png, webp
+Auto-transformation on upload: quality auto, format auto (WebP where supported), strip EXIF metadata
+Auto-generate responsive breakpoints: 400w, 800w, 1200w for product images
+Avatar transformation: c_fill, g_face, w_200, h_200, r_max (circular crop, face-detect)
+8.3  Delivery Configuration
+All images served via Cloudinary CDN — no origin server bandwidth used
+next-cloudinary CldImage component used everywhere for automatic optimization
+Lazy loading enabled by default on all product gallery images
+Blur-up placeholder generated at upload time for LCP optimization
+9. PROJECT STRUCTURE
+Next.js App Router Layout
+9.1  Directory Layout
+Path
+Description
+app/(public)/
+Public-facing pages: home, shop, product, cart, about, contact
+app/(public)/shop/
+Product listing with filters and pagination
+app/(public)/product/[slug]/
+Dynamic product detail page (SSR)
+app/(auth)/
+Login, register, forgot-password pages
+app/(customer)/account/
+Protected customer dashboard: orders, profile, wishlist, tickets
+app/(admin)/dashboard/
+Protected admin back-office: analytics, products, orders, users
+app/api/
+Next.js API routes: checkout, coupons, cloudinary, webhooks
+components/ui/
+Reusable design system components (Button, Input, Modal, Badge)
+components/shop/
+Shop-specific components: ProductCard, FilterSidebar, CartDrawer
+components/admin/
+Admin-specific components: DataTable, StatsCard, InventoryForm
+lib/supabase/
+Supabase client (browser), server client, admin client
+lib/cloudinary/
+Cloudinary upload helper and sign API
+lib/validations/
+Zod schemas for all forms and API routes
+lib/utils/
+Shared utility functions: cn(), formatPrice(), slugify()
+hooks/
+Custom React hooks: useCart, useWishlist, useAuth, useToast
+types/
+TypeScript interfaces and type definitions
+middleware.ts
+Next.js Middleware: auth check, role guard, security headers
+supabase/migrations/
+Supabase database migration files
+supabase/functions/
+Supabase Edge Functions: send-email, process-order
+public/
+Static assets: logos, favicon, og-image
+10. ENVIRONMENT VARIABLES
+Required Configuration Keys
+10.1  Full .env.example
+Security Note
+Never commit real values to source control. Store secrets in Vercel Environment Variables (production) and a local .env.local file (development). The .env.example file with placeholder values should be committed to guide onboarding.
+# ─── SUPABASE ───────────────────────────────────────────────
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+SUPABASE_JWT_SECRET=your-supabase-jwt-secret
+# ─── CLOUDINARY ─────────────────────────────────────────────
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+# ─── APP ─────────────────────────────────────────────────────
+NEXT_PUBLIC_SITE_URL=https://yotech.example.com
+# ─── EMAIL (RESEND) ─────────────────────────────────────────
+RESEND_API_KEY=re_your-resend-api-key
+EMAIL_FROM=noreply@yotech.example.com
+# ─── RATE LIMITING (UPSTASH) ────────────────────────────────
+UPSTASH_REDIS_REST_URL=https://your-upstash-url
+UPSTASH_REDIS_REST_TOKEN=your-upstash-token
+# ─── PAYMENTS (PAYSTACK) ───────────────────────────────────
+NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_your-paystack-public-key
+PAYSTACK_SECRET_KEY=sk_test_your-paystack-secret-key
+PAYSTACK_WEBHOOK_SECRET=your-paystack-webhook-hash
+# ─── MONITORING ─────────────────────────────────────────────
+NEXT_PUBLIC_SENTRY_DSN=https://your-sentry-dsn
+SENTRY_ORG=your-org
+SENTRY_PROJECT=yotech
+11. POST-MVP ROADMAP
+Future Enhancements
+Phase 2 — Enhanced Shopping
+Paystack payment integration (card, bank transfer, mobile money, USSD)
+Product comparison tool (side-by-side specs)
+AI-powered product recommendations (based on browsing + purchase history)
+Bulk order / B2B quote request form
+Loyalty points program with rewards redemption
+Phase 3 — Operations
+Automated inventory sync with supplier APIs
+Multi-currency support with real-time FX rates
+Shipping carrier API integration (FedEx, DHL) for real-time rates and tracking
+Advanced analytics: cohort analysis, LTV, churn prediction
+Live chat support widget (Intercom / Crisp integration)
+Phase 4 — Growth
+Affiliate / referral program
+Mobile app (React Native with shared Supabase backend)
+Multi-language and multi-region support (next-intl)
+Subscription model for software licenses (recurring billing)
+Vendor marketplace — allow third-party hardware sellers
+YoTech IT Solutions — MVP Documentation v1.0
+Prepared for development team use. All specifications subject to change.
+Stack: Next.js 14 · TypeScript · Supabase · Cloudinary · Tailwind CSS · Vercel
