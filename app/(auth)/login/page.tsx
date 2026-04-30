@@ -9,8 +9,9 @@ import { loginSchema, type LoginValues } from "@/lib/validations/auth";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "react-hot-toast";
-import { Chrome as Google, Github, Loader2 } from "lucide-react";
+import { Chrome as Google, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -102,9 +103,8 @@ export default function LoginPage() {
               Forgot password?
             </Link>
           </div>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             disabled={isLoading}
             {...register("password")}
           />
@@ -132,14 +132,10 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Button variant="outline" type="button" onClick={signInWithGoogle} className="rounded-xl">
+      <div className="grid grid-cols-1 gap-4">
+        <Button variant="outline" type="button" onClick={signInWithGoogle} className="rounded-xl h-11">
           <Google className="mr-2 h-4 w-4" />
-          Google
-        </Button>
-        <Button variant="outline" type="button" className="rounded-xl">
-          <Github className="mr-2 h-4 w-4" />
-          GitHub
+          Continue with Google
         </Button>
       </div>
 

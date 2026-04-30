@@ -42,7 +42,7 @@ import { type Profile } from "@/types";
 export function AdminSidebar({ profile }: { profile: Profile | null }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isCollapsed, toggle } = useSidebar();
+  const { isCollapsed, toggle, isOpen, setIsOpen } = useSidebar();
   const supabase = createClient();
 
   const handleSignOut = async () => {
@@ -57,12 +57,22 @@ export function AdminSidebar({ profile }: { profile: Profile | null }) {
   };
 
   return (
-    <aside 
-      className={cn(
-        "fixed inset-y-0 left-0 z-50 bg-[#0F172A] text-white flex flex-col transition-all duration-300 border-r border-slate-800",
-        isCollapsed ? "w-20" : "w-64"
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm lg:hidden transition-all duration-300" 
+          onClick={() => setIsOpen(false)}
+        />
       )}
-    >
+
+      <aside 
+        className={cn(
+          "fixed inset-y-0 left-0 z-[70] bg-[#0F172A] text-white flex flex-col transition-all duration-300 border-r border-slate-800",
+          isCollapsed ? "w-20" : "w-64",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
+      >
       <div className={cn("p-6 flex items-center relative transition-all duration-300", isCollapsed ? "justify-center px-2" : "justify-between")}>
         <div className={cn("transition-all duration-300", isCollapsed ? "opacity-100 scale-90" : "opacity-100 scale-100")}>
           <Logo height={isCollapsed ? 24 : 32} />
@@ -158,5 +168,6 @@ export function AdminSidebar({ profile }: { profile: Profile | null }) {
         )}
       </div>
     </aside>
+    </>
   );
 }

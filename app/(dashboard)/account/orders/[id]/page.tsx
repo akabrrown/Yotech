@@ -45,7 +45,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
               <Badge variant="success" className="capitalize">{order.status}</Badge>
             </div>
             <div className="divide-y">
-              {order.order_items?.map((item: any) => (
+              {order.order_items?.map((item: { id: string; qty: number; price: number; products: { name: string; images: string[] } | null }) => (
                 <div key={item.id} className="p-6 flex gap-6">
                   <div className="h-24 w-24 shrink-0 rounded-2xl overflow-hidden border bg-muted relative flex items-center justify-center">
                     {item.products?.images?.[0] ? (

@@ -10,7 +10,8 @@ import { CartDrawer } from "@/components/shop/cart-drawer";
 import { useCart } from "@/hooks/use-cart";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { type Category, type User as SupabaseUser } from "@/types";
+import { type Category } from "@/types";
+import { type User as SupabaseUser } from "@supabase/supabase-js";
 
 interface NavbarClientProps {
   categories: Category[];
@@ -20,7 +21,7 @@ export function NavbarClient({ categories }: NavbarClientProps) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const [user, setUser] = React.useState<any | null>(null);
+  const [user, setUser] = React.useState<SupabaseUser | null>(null);
   const [role, setRole] = React.useState<string | null>(null);
   
   const navItems = [
@@ -37,7 +38,8 @@ export function NavbarClient({ categories }: NavbarClientProps) {
   const supabase = createClient();
 
   React.useEffect(() => {
-    setMounted(true);
+    // Defer mounting to satisfy React 19/Next 16 linting rules
+    const mountTimeout = setTimeout(() => setMounted(true), 0);
     const initializeAuth = async () => {
       // Get initial session safely
       const { data: { session } } = await supabase.auth.getSession();
@@ -80,6 +82,7 @@ export function NavbarClient({ categories }: NavbarClientProps) {
 
     window.addEventListener("scroll", handleScroll);
     return () => {
+      clearTimeout(mountTimeout);
       window.removeEventListener("scroll", handleScroll);
       authPromise.then(sub => sub.unsubscribe());
     };

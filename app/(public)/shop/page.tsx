@@ -12,14 +12,14 @@ export default async function ShopPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const { category, brand, minPrice, maxPrice } = await searchParams;
+  const { category, brand, minPrice, maxPrice, inStock } = await searchParams;
   
   const products = await getProducts({
     category: category as string,
     brand: brand as string,
     minPrice: minPrice ? Number(minPrice) : undefined,
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    inStock: searchParams.inStock === "true",
+    inStock: inStock === "true",
   });
 
   return (

@@ -16,14 +16,14 @@ export default async function CategoryPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { category } = await params;
-  const { brand, minPrice, maxPrice } = await searchParams;
+  const { brand, minPrice, maxPrice, inStock } = await searchParams;
 
   const products = await getProducts({ 
     category,
     brand: brand as string,
     minPrice: minPrice ? Number(minPrice) : undefined,
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    inStock: (await searchParams).inStock === "true",
+    inStock: inStock === "true",
   });
 
   return (

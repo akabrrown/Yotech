@@ -53,10 +53,12 @@ export default function AboutPage() {
               <div className="relative">
                 <div className="aspect-video rounded-3xl overflow-hidden bg-muted relative shadow-xl">
                   {/* Using a placeholder from Unsplash for the office/tech vibe */}
-                  <img 
+                  <Image 
                     src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop" 
                     alt="YoTech Office Environment" 
-                    className="object-cover w-full h-full"
+                    fill
+                    className="object-cover"
+                    unoptimized
                   />
                 </div>
                 <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-2xl shadow-lg border">

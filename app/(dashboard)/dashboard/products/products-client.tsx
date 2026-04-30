@@ -12,6 +12,7 @@ import { deleteProduct } from "@/lib/actions/products";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types";
+import Image from "next/image";
 
 interface ProductsClientProps {
   products: Product[];
@@ -33,8 +34,9 @@ export function ProductsClient({ products: initialProducts }: ProductsClientProp
         setProducts(products.filter(p => p.id !== id));
         toast.success("Product deleted successfully");
         router.refresh();
-      } catch (error: any) {
-        toast.error(error.message || "Failed to delete product");
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to delete product";
+        toast.error(message);
       }
     }
   };
@@ -79,7 +81,13 @@ export function ProductsClient({ products: initialProducts }: ProductsClientProp
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="h-12 w-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 shadow-sm">
-                          <img src={product.featured_image || product.images[0] || ""} alt={product.name} className="h-full w-full object-cover" />
+                          <Image 
+                            src={product.featured_image || product.images[0] || ""} 
+                            alt={product.name} 
+                            width={48} 
+                            height={48} 
+                            className="h-full w-full object-cover" 
+                          />
                         </div>
                         <div className="flex flex-col">
                           <span className="font-bold text-slate-900 group-hover:text-primary transition-colors">{product.name}</span>

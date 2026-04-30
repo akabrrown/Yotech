@@ -30,7 +30,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   const [generalSettings, setGeneralSettings] = React.useState<Record<string, string>>(general as Record<string, string>);
   const [notifs, setNotifs] = React.useState<Record<string, boolean>>(notifications as Record<string, boolean>);
-  const [paymentSettings, setPaymentSettings] = React.useState<Record<string, any>>(payment as Record<string, any>);
+  const [paymentSettings, setPaymentSettings] = React.useState<Record<string, unknown>>(payment as Record<string, unknown>);
   const [showPaystackConfig, setShowPaystackConfig] = React.useState(false);
 
   const handleSave = async () => {
@@ -117,7 +117,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               </div>
             </CardContent>
           </Card>
-
+ 
           <Card className="border-none shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="border-b bg-slate-50/50 p-6">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -164,7 +164,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                     <label className="text-xs font-bold text-slate-700">Public Key</label>
                     <Input 
                       placeholder="pk_live_..." 
-                      value={paymentSettings.paystack_public_key || ""}
+                      value={(paymentSettings.paystack_public_key as string) || ""}
                       onChange={(e) => setPaymentSettings({...paymentSettings, paystack_public_key: e.target.value})}
                       className="rounded-xl font-mono text-xs" 
                     />
@@ -174,7 +174,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                     <Input 
                       type="password"
                       placeholder="sk_live_..." 
-                      value={paymentSettings.paystack_secret_key || ""}
+                      value={(paymentSettings.paystack_secret_key as string) || ""}
                       onChange={(e) => setPaymentSettings({...paymentSettings, paystack_secret_key: e.target.value})}
                       className="rounded-xl font-mono text-xs" 
                     />

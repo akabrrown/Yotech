@@ -37,7 +37,8 @@ export default function AdminLayout({
        {/* Main Content Area */}
       <div className={cn(
         "flex flex-col min-h-screen transition-all duration-300",
-        isCollapsed ? "pl-20" : "pl-64"
+        isCollapsed ? "lg:pl-20" : "lg:pl-64",
+        "pl-0"
       )}>
         <AdminHeader profile={profile} />
 

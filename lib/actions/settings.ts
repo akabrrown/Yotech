@@ -32,7 +32,7 @@ export async function getStoreSettings() {
   return data;
 }
 
-export async function updateStoreSetting(key: string, value: any) {
+export async function updateStoreSetting(key: string, value: unknown) {
   const supabase = await getSupabase();
   const { error } = await supabase
     .from("store_settings")

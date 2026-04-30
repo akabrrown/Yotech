@@ -76,7 +76,7 @@ export default async function AddressesPage() {
             </div>
             <div className="space-y-1">
               <p className="font-bold">No addresses found</p>
-              <p className="text-sm text-muted-foreground">You haven't added any shipping addresses yet.</p>
+              <p className="text-sm text-muted-foreground">You haven&apos;t added any shipping addresses yet.</p>
             </div>
             <Button variant="outline" className="rounded-xl">Add Your First Address</Button>
           </div>

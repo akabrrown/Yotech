@@ -9,6 +9,7 @@ import { registerSchema, type RegisterValues } from "@/lib/validations/auth";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "react-hot-toast";
 
 export default function RegisterPage() {
@@ -96,9 +97,8 @@ export default function RegisterPage() {
           <label className="text-sm font-medium" htmlFor="password">
             Password
           </label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             disabled={isLoading}
             {...register("password")}
           />
@@ -110,9 +110,8 @@ export default function RegisterPage() {
           <label className="text-sm font-medium" htmlFor="confirmPassword">
             Confirm Password
           </label>
-          <Input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             disabled={isLoading}
             {...register("confirmPassword")}
           />

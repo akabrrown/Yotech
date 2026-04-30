@@ -1,10 +1,8 @@
 import { 
-  TrendingUp, 
   Users, 
   ShoppingBag, 
   DollarSign, 
   ArrowUpRight, 
-  ArrowDownRight,
   Clock,
   ExternalLink,
   Package,
@@ -16,6 +14,17 @@ import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
 
 import { getDashboardStats } from "@/lib/actions/dashboard";
+
+interface RecentOrder {
+  id: string;
+  order_number: string;
+  total: number;
+  status: string;
+  created_at: string;
+  profiles: {
+    full_name: string | null;
+  }[] | { full_name: string | null } | null;
+}
 
 export default async function AdminDashboard() {
   const { totalRevenue, totalOrders, newCustomers, recentOrders, lowStockCount } = await getDashboardStats();
@@ -55,13 +64,16 @@ export default async function AdminDashboard() {
     },
   ];
 
-  const formattedRecentOrders = recentOrders.map((order: any) => ({
-    id: `#${order.order_number}`,
-    customer: order.profiles?.full_name || "Guest",
-    items: 0, // Placeholder as we don't have items count in the simple query yet
-    total: Number(order.total),
-    status: order.status
-  }));
+  const formattedRecentOrders = (recentOrders as unknown as RecentOrder[]).map((order) => {
+    const profile = Array.isArray(order.profiles) ? order.profiles[0] : order.profiles;
+    return {
+      id: `#${order.order_number}`,
+      customer: profile?.full_name || "Guest",
+      items: 0,
+      total: Number(order.total),
+      status: order.status
+    };
+  });
 
   return (
     <div className="space-y-8">

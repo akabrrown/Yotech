@@ -4,7 +4,7 @@ import { Hero } from "@/components/home/hero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Laptop, Cpu, MousePointer2, Headphones, Database, Shield, Wrench, LucideIcon } from "lucide-react";
+import { Laptop, Cpu, MousePointer2, Headphones, Database, Shield, Wrench, Monitor, LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 
@@ -15,10 +15,13 @@ import Image from "next/image";
 
 const categoryIcons: { [key: string]: LucideIcon } = {
   "Laptops": Laptop,
+  "Desktops": Monitor,
+  "Desktop PCs": Monitor,
+  "Desktop PC's": Monitor,
   "Components": Cpu,
   "Software": Database,
   "Accessories": MousePointer2,
-  "Monitors": Headphones, // Fallback icons
+  "Monitors": Monitor,
   "Networking": Cpu,
 };
 

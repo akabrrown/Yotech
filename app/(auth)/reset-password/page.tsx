@@ -8,6 +8,7 @@ import * as z from "zod";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "react-hot-toast";
 
 const resetPasswordSchema = z
@@ -76,9 +77,8 @@ export default function ResetPasswordPage() {
           <label className="text-sm font-medium" htmlFor="password">
             New Password
           </label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             disabled={isLoading}
             {...register("password")}
           />
@@ -90,9 +90,8 @@ export default function ResetPasswordPage() {
           <label className="text-sm font-medium" htmlFor="confirmPassword">
             Confirm New Password
           </label>
-          <Input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             disabled={isLoading}
             {...register("confirmPassword")}
           />

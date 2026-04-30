@@ -6,6 +6,8 @@ import { formatPrice } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
+import { Product } from "@/types";
+
 export default async function WishlistPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -29,12 +31,14 @@ export default async function WishlistPage() {
 
       <div className="space-y-6">
         {wishlistItems && wishlistItems.length > 0 ? (
-          wishlistItems.map((item: any) => (
+          wishlistItems
+            .filter((item: { products: Product | null }) => item.products) // Filter out items where the product might have been deleted
+            .map((item: { id: string; products: Product }) => (
             <div key={item.id} className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-muted/5 rounded-3xl border border-muted/50 hover:border-primary/50 transition-all duration-300">
               <div className="h-24 w-24 rounded-2xl overflow-hidden bg-muted flex-shrink-0">
                 <Image 
-                  src={item.products?.images?.[0] || "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=200&auto=format&fit=crop"} 
-                  alt={item.products?.name} 
+                  src={item.products.images?.[0] || "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=200&auto=format&fit=crop"} 
+                  alt={item.products.name || "Product image"} 
                   width={100} 
                   height={100} 
                   className="object-cover h-full w-full"
@@ -42,12 +46,12 @@ export default async function WishlistPage() {
               </div>
               
               <div className="flex-grow text-center sm:text-left space-y-1">
-                <Link href={`/product/${item.products?.slug}`} className="text-lg font-bold hover:text-primary transition-colors">
-                  {item.products?.name}
+                <Link href={`/product/${item.products.slug}`} className="text-lg font-bold hover:text-primary transition-colors">
+                  {item.products.name}
                 </Link>
-                <p className="text-primary font-extrabold text-xl">{formatPrice(item.products?.price)}</p>
+                <p className="text-primary font-extrabold text-xl">{formatPrice(item.products.price)}</p>
                 <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                  {item.products?.stock_qty > 0 ? "In Stock" : "Out of Stock"}
+                  {item.products.stock_qty > 0 ? "In Stock" : "Out of Stock"}
                 </p>
               </div>
 

@@ -166,23 +166,26 @@ export async function getProductById(id: string) {
   } as Product;
 }
 
-export async function updateProduct(id: string, values: any) {
+export async function updateProduct(id: string, values: Partial<Product>) {
   const supabase = await createClient();
   
-  const slug = values.name
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  const updateData: Partial<Product> = {
+    ...values,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (values.name) {
+    updateData.slug = values.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
 
   const { data, error } = await supabase
     .from("products")
-    .update({
-      ...values,
-      slug,
-      updated_at: new Date().toISOString(),
-    })
+    .update(updateData)
     .eq("id", id)
     .select()
     .single();
