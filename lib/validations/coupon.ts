@@ -5,8 +5,12 @@ export const couponSchema = z.object({
   type: z.enum(["percentage", "fixed", "free_shipping"]),
   value: z.coerce.number().min(0, "Value cannot be negative"),
   min_order_value: z.coerce.number().min(0).default(0),
-  usage_limit: z.coerce.number().int().positive().optional().nullable(),
-  expires_at: z.string().optional().nullable(),
+  usage_limit: z.union([
+    z.coerce.number().int().positive(),
+    z.literal("").transform(() => null),
+    z.literal(0).transform(() => null)
+  ]).optional().nullable(),
+  expires_at: z.string().optional().nullable().transform(v => v === "" ? null : v),
   is_active: z.boolean().default(true),
 });
 

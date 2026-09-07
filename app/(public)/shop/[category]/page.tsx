@@ -4,8 +4,9 @@ import { Footer } from "../../../../components/layout/footer";
 import { ProductCard } from "../../../../components/shop/product-card";
 import { FilterSidebar } from "../../../../components/shop/filter-sidebar";
 import { Button } from "@/components/ui/button";
-import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
-import { getProducts } from "@/lib/actions/products";
+import { LayoutGrid, List } from "lucide-react";
+import { getProducts, getCategories } from "@/lib/actions/products";
+import { MobileFilters } from "../../../../components/shop/mobile-filters";
 import { type Product } from "@/types";
 
 export default async function CategoryPage({
@@ -18,13 +19,16 @@ export default async function CategoryPage({
   const { category } = await params;
   const { brand, minPrice, maxPrice, inStock } = await searchParams;
 
-  const products = await getProducts({ 
-    category,
-    brand: brand as string,
-    minPrice: minPrice ? Number(minPrice) : undefined,
-    maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    inStock: inStock === "true",
-  });
+  const [products, categories] = await Promise.all([
+    getProducts({ 
+      category,
+      brand: brand as string,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      inStock: inStock === "true",
+    }),
+    getCategories()
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -36,11 +40,7 @@ export default async function CategoryPage({
           <div className="lg:w-64 shrink-0">
             <FilterSidebar className="hidden lg:block sticky top-24" />
             
-            {/* Mobile Filter Button */}
-            <Button variant="outline" className="lg:hidden w-full gap-2 mb-6">
-              <SlidersHorizontal className="h-4 w-4" />
-              Show Filters
-            </Button>
+            <MobileFilters categories={categories} />
           </div>
 
           {/* Main Content */}

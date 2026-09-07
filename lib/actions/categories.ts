@@ -1,7 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, requireAdmin } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { categorySchema } from "@/lib/validations/admin";
 
 export async function createCategory(values: {
   name: string;
@@ -9,15 +10,16 @@ export async function createCategory(values: {
   image_url?: string;
   parent_id?: string | null;
 }) {
-  const supabase = await createClient();
+  const { supabase } = await requireAdmin();
+  const validValues = categorySchema.parse(values);
   
   // Create slug from name
-  const slug = values.name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+  const slug = validValues.name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
 
   const { data, error } = await supabase
     .from("categories")
     .insert({
-      ...values,
+      ...validValues,
       slug,
     })
     .select()
@@ -37,14 +39,15 @@ export async function updateCategory(id: string, values: {
   image_url?: string;
   parent_id?: string | null;
 }) {
-  const supabase = await createClient();
+  const { supabase } = await requireAdmin();
+  const validValues = categorySchema.parse(values);
   
-  const slug = values.name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
+  const slug = validValues.name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "");
 
   const { data, error } = await supabase
     .from("categories")
     .update({
-      ...values,
+      ...validValues,
       slug,
     })
     .eq("id", id)
@@ -60,7 +63,7 @@ export async function updateCategory(id: string, values: {
 }
 
 export async function deleteCategory(id: string) {
-  const supabase = await createClient();
+  const { supabase } = await requireAdmin();
 
   const { error } = await supabase
     .from("categories")

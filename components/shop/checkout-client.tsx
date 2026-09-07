@@ -5,15 +5,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/utils";
-import { ShieldCheck, Truck, CreditCard, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, CheckCircle2, Loader2, Tag } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+import { validateCoupon } from "@/lib/actions/coupons";
+import { toast } from "react-hot-toast";
 
-export function CheckoutClient() {
+interface CheckoutClientProps {
+  settings?: any[];
+}
+
+export function CheckoutClient({ settings }: CheckoutClientProps) {
   const { items, totalPrice } = useCart();
   const [step, setStep] = React.useState(1); // 1: Shipping, 2: Payment, 3: Confirmation
   const [orderId, setOrderId] = React.useState<string>("");
+  
+  // Coupon state
+  const [couponCode, setCouponCode] = React.useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = React.useState(false);
+  const [appliedCoupon, setAppliedCoupon] = React.useState<any>(null);
+
+  // Shipping logic
+  const shippingConfig = settings?.find(s => s.key === 'shipping')?.value || {
+    flat_rate: 0,
+    free_shipping_threshold: 0
+  };
+
+  const shippingCost = React.useMemo(() => {
+    // Check if coupon provides free shipping
+    if (appliedCoupon?.type === 'free_shipping') return 0;
+    
+    // Check if total meets free shipping threshold
+    if (shippingConfig.free_shipping_threshold > 0 && totalPrice >= shippingConfig.free_shipping_threshold) {
+      return 0;
+    }
+    
+    return shippingConfig.flat_rate || 0;
+  }, [totalPrice, shippingConfig, appliedCoupon]);
 
   React.useEffect(() => {
     const timeout = setTimeout(() => {
@@ -21,6 +50,43 @@ export function CheckoutClient() {
     }, 0);
     return () => clearTimeout(timeout);
   }, []);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return;
+    setIsApplyingCoupon(true);
+    try {
+      const result = await validateCoupon(couponCode, totalPrice);
+      if (result.error) {
+        toast.error(result.error);
+        setAppliedCoupon(null);
+      } else {
+        toast.success("Coupon applied successfully!");
+        setAppliedCoupon(result.coupon);
+      }
+    } catch {
+      toast.error("Failed to apply coupon");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    toast.success("Coupon removed");
+  };
+
+  const discountAmount = React.useMemo(() => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.type === "percentage") {
+      return (totalPrice * appliedCoupon.value) / 100;
+    } else if (appliedCoupon.type === "fixed") {
+      return Math.min(appliedCoupon.value, totalPrice);
+    }
+    return 0; 
+  }, [appliedCoupon, totalPrice]);
+
+  const finalPrice = Math.max(0, totalPrice - discountAmount + shippingCost);
 
   if (items.length === 0 && step !== 3) {
     return (
@@ -72,7 +138,7 @@ export function CheckoutClient() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Phone Number</label>
-                    <Input placeholder="+234 ..." />
+                    <Input placeholder="+233 ..." />
                   </div>
                   <div className="sm:col-span-2 space-y-2">
                     <label className="text-sm font-medium">Street Address</label>
@@ -80,11 +146,11 @@ export function CheckoutClient() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">City</label>
-                    <Input placeholder="Lagos" />
+                    <Input placeholder="Accra" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">State</label>
-                    <Input placeholder="Lagos" />
+                    <label className="text-sm font-medium">State/Region</label>
+                    <Input placeholder="Greater Accra Region" />
                   </div>
                 </div>
                 <Button onClick={() => setStep(2)} className="w-full h-14 text-lg rounded-xl">
@@ -111,7 +177,7 @@ export function CheckoutClient() {
                     Back
                   </Button>
                   <Button onClick={() => setStep(3)} className="flex-[2] h-14 text-lg rounded-xl">
-                    Pay {formatPrice(totalPrice)}
+                    Pay {formatPrice(finalPrice)}
                   </Button>
                 </div>
               </Card>
@@ -151,18 +217,74 @@ export function CheckoutClient() {
                     </div>
                   ))}
                 </div>
+                
+                {/* Coupon Code Section */}
+                <div className="space-y-3 mb-6 pt-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-slate-700">Promo Code</p>
+                    {appliedCoupon && (
+                      <button onClick={handleRemoveCoupon} className="text-xs text-rose-500 hover:text-rose-600 font-bold">Remove</button>
+                    )}
+                  </div>
+                  
+                  {!appliedCoupon ? (
+                    <div className="flex gap-2">
+                      <div className="relative flex-grow">
+                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Input 
+                          placeholder="Enter code" 
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          className="pl-9 rounded-xl font-mono uppercase bg-slate-50"
+                          onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
+                        />
+                      </div>
+                      <Button 
+                        variant="secondary" 
+                        onClick={handleApplyCoupon}
+                        disabled={isApplyingCoupon || !couponCode}
+                        className="rounded-xl w-20"
+                      >
+                        {isApplyingCoupon ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 rounded-md bg-emerald-100 text-emerald-600">
+                          <Tag className="h-4 w-4" />
+                        </div>
+                        <span className="font-bold text-sm text-emerald-800 uppercase tracking-widest">{appliedCoupon.code}</span>
+                      </div>
+                      <span className="text-sm font-bold text-emerald-600">
+                        -{appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}%` : formatPrice(appliedCoupon.value)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-2 pt-4 border-t">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span>{formatPrice(totalPrice)}</span>
                   </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-emerald-600 font-medium">Discount</span>
+                      <span className="text-emerald-600 font-bold">-{formatPrice(discountAmount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span className="text-success font-bold">FREE</span>
+                    {shippingCost === 0 ? (
+                      <span className="text-emerald-600 font-bold uppercase text-[10px] tracking-widest">Free</span>
+                    ) : (
+                      <span className="font-bold">{formatPrice(shippingCost)}</span>
+                    )}
                   </div>
-                  <div className="flex justify-between text-lg font-extrabold pt-4">
+                  <div className="flex justify-between text-lg font-extrabold pt-4 border-t">
                     <span>Total</span>
-                    <span className="text-primary">{formatPrice(totalPrice)}</span>
+                    <span className="text-primary">{formatPrice(finalPrice)}</span>
                   </div>
                 </div>
               </Card>
@@ -173,3 +295,4 @@ export function CheckoutClient() {
     </main>
   );
 }
+

@@ -1,7 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, requireAdmin } from "@/lib/supabase/server";
 import { Product, Category } from "@/types";
+import { updateProductSchema } from "@/lib/validations/admin";
 
 export async function getProducts(options?: {
   category?: string;
@@ -11,6 +12,7 @@ export async function getProducts(options?: {
   limit?: number;
   featured?: boolean;
   inStock?: boolean;
+  query?: string;
 }) {
   const supabase = await createClient();
   
@@ -41,6 +43,10 @@ export async function getProducts(options?: {
 
   if (options?.brand) {
     query = query.eq("brand", options.brand);
+  }
+
+  if (options?.query) {
+    query = query.ilike("name", `%${options.query}%`);
   }
 
   if (options?.minPrice) {
@@ -131,7 +137,7 @@ export async function getProductCount() {
 }
 
 export async function deleteProduct(id: string) {
-  const supabase = await createClient();
+  const { supabase } = await requireAdmin();
 
   const { error } = await supabase
     .from("products")
@@ -166,9 +172,11 @@ export async function getProductById(id: string) {
   } as Product;
 }
 
-export async function updateProduct(id: string, values: Partial<Product>) {
-  const supabase = await createClient();
+export async function updateProduct(id: string, rawValues: Partial<Product>) {
+  const { supabase } = await requireAdmin();
   
+  const values = updateProductSchema.parse(rawValues);
+
   const updateData: Partial<Product> = {
     ...values,
     updated_at: new Date().toISOString(),

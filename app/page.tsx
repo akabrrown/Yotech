@@ -4,7 +4,7 @@ import { Hero } from "@/components/home/hero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Laptop, Cpu, MousePointer2, Headphones, Database, Shield, Wrench, Monitor, LucideIcon } from "lucide-react";
+import { Laptop, Cpu, MousePointer2, Headphones, Database, Shield, Wrench, Monitor, LucideIcon, FileCode, Server } from "lucide-react"; // force rebuild
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 
@@ -19,10 +19,10 @@ const categoryIcons: { [key: string]: LucideIcon } = {
   "Desktop PCs": Monitor,
   "Desktop PC's": Monitor,
   "Components": Cpu,
-  "Software": Database,
-  "Accessories": MousePointer2,
+  "Software": FileCode,
+  "Accessories": MousePointer2, // Keeping MousePointer2 as generic accessory 
   "Monitors": Monitor,
-  "Networking": Cpu,
+  "Networking": Server,
 };
 
 export default async function Home() {
@@ -144,14 +144,13 @@ export default async function Home() {
 
         {/* Services / Why Us Section */}
         <section className="py-20 bg-primary text-white overflow-hidden relative">
-          <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
                 <h2 className="text-4xl font-extrabold leading-tight mb-6">
                   Professional Tech Support & Hardware Services
                 </h2>
-                <p className="text-primary-light text-lg mb-8 leading-relaxed">
+                <p className="text-blue-100 text-lg mb-8 leading-relaxed">
                   Our certified technicians are ready to assist you with system upgrades, repairs, and software troubleshooting. We don&apos;t just sell tech; we ensure it works perfectly for you.
                 </p>
                 <div className="space-y-6">
@@ -160,8 +159,8 @@ export default async function Home() {
                       <Shield className="h-6 w-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-xl">Authorized Partners</h4>
-                      <p className="text-primary-light text-sm">We only stock 100% genuine products with manufacturer warranties.</p>
+                      <h4 className="font-bold text-xl text-white">Authorized Partners</h4>
+                      <p className="text-blue-100 text-sm">We only stock 100% genuine products with manufacturer warranties.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -169,8 +168,8 @@ export default async function Home() {
                       <Wrench className="h-6 w-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-xl">On-Site Assistance</h4>
-                      <p className="text-primary-light text-sm">Hardware repairs and networking setup available at your location.</p>
+                      <h4 className="font-bold text-xl text-white">On-Site Assistance</h4>
+                      <p className="text-blue-100 text-sm">Hardware repairs and networking setup available at your location.</p>
                     </div>
                   </div>
                 </div>

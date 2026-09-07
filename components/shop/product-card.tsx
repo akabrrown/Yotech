@@ -1,13 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { formatPrice } from "@/lib/utils";
-
+import { formatPrice, cn } from "@/lib/utils";
 import { AddToCartButton } from "./add-to-cart-button";
 import { type Product } from "@/types";
+import { useWishlist } from "@/hooks/use-wishlist";
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +18,20 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = product.stock_qty <= 0;
   const isLowStock = product.stock_qty > 0 && product.stock_qty <= 5;
+  const { isInWishlist, toggleItem } = useWishlist();
+  const wishlisted = isInWishlist(product.id);
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleItem({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      image: product.featured_image || product.images?.[0] || "",
+    });
+  };
 
   return (
     <Card className="group overflow-hidden border-none bg-muted/20 hover:shadow-xl transition-all duration-300">
@@ -33,8 +49,15 @@ export function ProductCard({ product }: ProductCardProps) {
               variant="secondary"
               size="icon"
               className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={handleWishlistToggle}
+              aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
             >
-              <Heart className="h-4 w-4" />
+              <Heart
+                className={cn(
+                  "h-4 w-4 transition-colors",
+                  wishlisted ? "fill-rose-500 text-rose-500" : "text-foreground"
+                )}
+              />
             </Button>
           </div>
           {isOutOfStock ? (
@@ -74,8 +97,8 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="text-lg font-extrabold">{formatPrice(product.price)}</p>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <AddToCartButton 
-          product={product} 
+        <AddToCartButton
+          product={product}
           size="sm"
           className="w-full gap-2 rounded-full shadow-lg shadow-primary/10"
         />
@@ -83,5 +106,3 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
-
-import { cn } from "@/lib/utils";

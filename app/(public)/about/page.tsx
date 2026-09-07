@@ -16,17 +16,13 @@ export default function AboutPage() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="bg-primary py-24 text-white relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20">
-            <div className="absolute -top-[20%] -right-[10%] w-[50%] h-[150%] bg-white/20 rotate-12 blur-3xl rounded-full" />
-            <div className="absolute top-[60%] -left-[10%] w-[40%] h-[100%] bg-white/10 -rotate-12 blur-2xl rounded-full" />
-          </div>
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="max-w-3xl">
               <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">
-                Empowering Your Digital World
+                Supplying Your Tech Needs
               </h1>
               <p className="text-lg md:text-xl text-primary-light leading-relaxed">
-                YoTech IT Solutions is Ghana&apos;s premier destination for high-quality IT hardware, software licenses, and professional technical support services. We bridge the gap between complex technology and seamless user experiences.
+                YoTech IT Solutions is Ghana&apos;s premier destination for high-quality IT hardware, software licenses, and professional technical support services. We provide the equipment you need to operate effectively.
               </p>
             </div>
           </div>
@@ -87,45 +83,53 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-card p-8 rounded-2xl shadow-sm border text-center hover:border-primary/50 transition-colors">
-                <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6">
-                  <Shield className="h-6 w-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+              <div className="flex gap-6 items-start">
+                <div className="h-12 w-12 shrink-0 rounded-full border border-primary/20 text-primary flex items-center justify-center mt-1">
+                  <Shield className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Integrity</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  We only source 100% genuine products. Honesty and transparency are at the heart of our business relationships.
-                </p>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Integrity</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    We only source 100% genuine products. Honesty and transparency are at the heart of our business relationships.
+                  </p>
+                </div>
               </div>
               
-              <div className="bg-card p-8 rounded-2xl shadow-sm border text-center hover:border-primary/50 transition-colors">
-                <div className="mx-auto h-14 w-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
-                  <Zap className="h-6 w-6" />
+              <div className="flex gap-6 items-start">
+                <div className="h-12 w-12 shrink-0 rounded-full border border-primary/20 text-primary flex items-center justify-center mt-1">
+                  <Zap className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Excellence</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  We strive for superior performance in our hardware selection and the technical services we deliver.
-                </p>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Excellence</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    We strive for superior performance in our hardware selection and the technical services we deliver.
+                  </p>
+                </div>
               </div>
 
-              <div className="bg-card p-8 rounded-2xl shadow-sm border text-center hover:border-primary/50 transition-colors">
-                <div className="mx-auto h-14 w-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6">
-                  <Target className="h-6 w-6" />
+              <div className="flex gap-6 items-start">
+                <div className="h-12 w-12 shrink-0 rounded-full border border-primary/20 text-primary flex items-center justify-center mt-1">
+                  <Target className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Innovation</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  We stay ahead of the technology curve to bring our clients the most efficient and modern IT solutions available.
-                </p>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Innovation</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    We stay ahead of the technology curve to bring our clients the most efficient and modern IT solutions available.
+                  </p>
+                </div>
               </div>
 
-              <div className="bg-card p-8 rounded-2xl shadow-sm border text-center hover:border-primary/50 transition-colors">
-                <div className="mx-auto h-14 w-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-6">
-                  <Users className="h-6 w-6" />
+              <div className="flex gap-6 items-start">
+                <div className="h-12 w-12 shrink-0 rounded-full border border-primary/20 text-primary flex items-center justify-center mt-1">
+                  <Users className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Customer First</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Your success is our success. We prioritize exceptional customer service and long-term partnerships.
-                </p>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Customer First</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Your success is our success. We prioritize exceptional customer service and long-term partnerships.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

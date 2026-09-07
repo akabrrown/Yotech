@@ -5,10 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   User, 
-  Package, 
+  ClipboardList, 
   MapPin, 
   Heart, 
-  LifeBuoy, 
+  Ticket, 
   Settings, 
   LogOut,
   ChevronRight
@@ -21,10 +21,10 @@ import { User as SupabaseUser } from "@supabase/supabase-js";
 
 const menuItems = [
   { name: "My Profile", href: "/account", icon: User },
-  { name: "Order History", href: "/account/orders", icon: Package },
+  { name: "Order History", href: "/account/orders", icon: ClipboardList },
   { name: "Address Book", href: "/account/addresses", icon: MapPin },
   { name: "Wishlist", href: "/account/wishlist", icon: Heart },
-  { name: "Support Tickets", href: "/account/tickets", icon: LifeBuoy },
+  { name: "Support Tickets", href: "/account/tickets", icon: Ticket },
   { name: "Settings", href: "/account/settings", icon: Settings },
 ];
 

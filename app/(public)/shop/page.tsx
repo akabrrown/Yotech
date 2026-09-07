@@ -3,24 +3,28 @@ import { Footer } from "../../../components/layout/footer";
 import { ProductCard } from "../../../components/shop/product-card";
 import { FilterSidebar } from "../../../components/shop/filter-sidebar";
 import { Button } from "../../../components/ui/button";
-import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
-
-import { getProducts } from "@/lib/actions/products";
+import { LayoutGrid, List } from "lucide-react";
+import { getProducts, getCategories } from "@/lib/actions/products";
+import { MobileFilters } from "../../../components/shop/mobile-filters";
 
 export default async function ShopPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const { category, brand, minPrice, maxPrice, inStock } = await searchParams;
+  const { category, brand, minPrice, maxPrice, inStock, q } = await searchParams;
   
-  const products = await getProducts({
-    category: category as string,
-    brand: brand as string,
-    minPrice: minPrice ? Number(minPrice) : undefined,
-    maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    inStock: inStock === "true",
-  });
+  const [products, categories] = await Promise.all([
+    getProducts({
+      category: category as string,
+      brand: brand as string,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      inStock: inStock === "true",
+      query: q as string,
+    }),
+    getCategories()
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -32,17 +36,15 @@ export default async function ShopPage({
           <div className="lg:w-64 shrink-0">
             <FilterSidebar className="hidden lg:block sticky top-24" />
             
-            {/* Mobile Filter Button */}
-            <Button variant="outline" className="lg:hidden w-full gap-2 mb-6">
-              <SlidersHorizontal className="h-4 w-4" />
-              Show Filters
-            </Button>
+            <MobileFilters categories={categories} />
           </div>
 
           {/* Main Content */}
           <div className="flex-grow space-y-6">
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold">Shop All Products</h1>
+                <h1 className="text-3xl font-bold">
+                  {q ? `Search results for "${q}"` : "Shop All Products"}
+                </h1>
                 <p className="text-muted-foreground">Premium IT hardware and software solutions.</p>
             </div>
 

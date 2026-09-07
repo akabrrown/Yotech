@@ -11,8 +11,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { updateCoupon } from "@/lib/actions/coupons";
 
-export function CouponForm() {
+interface CouponFormProps {
+  initialData?: any;
+}
+
+export function CouponForm({ initialData }: CouponFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
   const supabase = createClient();
@@ -21,9 +26,12 @@ export function CouponForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<any>({
     resolver: zodResolver(couponSchema),
-    defaultValues: {
+    defaultValues: initialData ? {
+      ...initialData,
+      expires_at: initialData.expires_at ? new Date(initialData.expires_at).toISOString().split('T')[0] : "",
+    } : {
       type: "percentage" as const,
       value: 0,
       min_order_value: 0,
@@ -34,21 +42,31 @@ export function CouponForm() {
   const onSubmit = async (values: CouponValues) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from("coupons")
-        .insert(values);
+      if (initialData?.id) {
+        await updateCoupon(initialData.id, values);
+        toast.success("Coupon updated successfully!");
+      } else {
+        const { error } = await supabase
+          .from("coupons")
+          .insert(values);
 
-      if (error) {
-        toast.error(error.message);
-        return;
+        if (error) {
+          toast.error(error.message);
+          setIsLoading(false);
+          return;
+        }
+        toast.success("Coupon created successfully!");
       }
 
-      toast.success("Coupon created successfully!");
-      router.push("/dashboard/coupons");
-      router.refresh();
-    } catch {
-      toast.error("Something went wrong");
-    } finally {
+      setIsLoading(false);
+      
+      // Navigate in a separate tick to ensure the loading spinner stops first
+      setTimeout(() => {
+        router.push("/dashboard/coupons");
+        router.refresh();
+      }, 100);
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
       setIsLoading(false);
     }
   };
@@ -62,7 +80,7 @@ export function CouponForm() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Coupon Code</label>
                 <Input placeholder="e.g. SUMMER25" {...register("code")} className="rounded-xl font-mono uppercase" />
-                {errors.code && <p className="text-xs text-destructive">{errors.code.message}</p>}
+                {errors.code?.message && <p className="text-xs text-destructive">{String(errors.code.message)}</p>}
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -80,7 +98,7 @@ export function CouponForm() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Value</label>
                   <Input type="number" step="0.01" {...register("value")} className="rounded-xl" />
-                  {errors.value && <p className="text-xs text-destructive">{errors.value.message}</p>}
+                  {errors.value?.message && <p className="text-xs text-destructive">{String(errors.value.message)}</p>}
                 </div>
               </div>
             </CardContent>
@@ -119,7 +137,7 @@ export function CouponForm() {
           </Card>
 
           <Button type="submit" className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/20" disabled={isLoading}>
-            {isLoading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : "Create Coupon"}
+            {isLoading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : initialData ? "Update Coupon" : "Create Coupon"}
           </Button>
         </div>
       </div>

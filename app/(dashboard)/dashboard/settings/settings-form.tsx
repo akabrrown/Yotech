@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Save, Bell, Shield, Globe, CreditCard, Loader2 } from "lucide-react";
+import { Save, Bell, Shield, Globe, CreditCard, Loader2, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateStoreSetting } from "@/lib/actions/settings";
@@ -27,10 +27,16 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const general = initialSettings.find(s => s.key === 'general')?.value || {};
   const payment = initialSettings.find(s => s.key === 'payment')?.value || {};
   const notifications = initialSettings.find(s => s.key === 'notifications')?.value || {};
+  const shipping = initialSettings.find(s => s.key === 'shipping')?.value || {
+    flat_rate: 0,
+    free_shipping_threshold: 0,
+    enabled: true
+  };
 
   const [generalSettings, setGeneralSettings] = React.useState<Record<string, string>>(general as Record<string, string>);
   const [notifs, setNotifs] = React.useState<Record<string, boolean>>(notifications as Record<string, boolean>);
   const [paymentSettings, setPaymentSettings] = React.useState<Record<string, unknown>>(payment as Record<string, unknown>);
+  const [shippingSettings, setShippingSettings] = React.useState<Record<string, any>>(shipping);
   const [showPaystackConfig, setShowPaystackConfig] = React.useState(false);
 
   const handleSave = async () => {
@@ -39,7 +45,8 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       await Promise.all([
         updateStoreSetting('general', generalSettings),
         updateStoreSetting('payment', paymentSettings),
-        updateStoreSetting('notifications', notifs)
+        updateStoreSetting('notifications', notifs),
+        updateStoreSetting('shipping', shippingSettings)
       ]);
       toast.success("Settings updated successfully");
     } catch (error: unknown) {
@@ -113,6 +120,39 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                     onChange={(e) => setGeneralSettings({...generalSettings, address: e.target.value})}
                     className="rounded-xl" 
                   />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-none shadow-sm rounded-3xl overflow-hidden">
+            <CardHeader className="border-b bg-slate-50/50 p-6">
+              <CardTitle className="text-lg flex items-center gap-2 text-indigo-600">
+                <Truck className="h-5 w-5" />
+                Shipping Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Flat Rate Shipping Fee (GHS)</label>
+                  <Input 
+                    type="number"
+                    value={shippingSettings.flat_rate} 
+                    onChange={(e) => setShippingSettings({...shippingSettings, flat_rate: parseFloat(e.target.value) || 0})}
+                    className="rounded-xl" 
+                  />
+                  <p className="text-xs text-slate-500">Standard delivery fee applied to all orders.</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Free Shipping Threshold (GHS)</label>
+                  <Input 
+                    type="number"
+                    value={shippingSettings.free_shipping_threshold} 
+                    onChange={(e) => setShippingSettings({...shippingSettings, free_shipping_threshold: parseFloat(e.target.value) || 0})}
+                    className="rounded-xl" 
+                  />
+                  <p className="text-xs text-slate-500">Orders above this amount get free shipping. Set to 0 to disable.</p>
                 </div>
               </div>
             </CardContent>
